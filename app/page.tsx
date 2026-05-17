@@ -7,7 +7,7 @@ export default function LandingPage() {
       {/* Navbar */}
       <nav className="border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <span className="text-xl font-bold text-brand-600">BulkDescribe</span>
+          <span className="text-xl font-bold text-brand-600">Descri</span>
           <div className="flex items-center gap-4">
             <Link href="/auth/login" className="text-gray-600 hover:text-gray-900 font-medium text-sm">
               Connexion
@@ -111,7 +111,7 @@ export default function LandingPage() {
       {/* Before / After */}
       <section className="py-20 max-w-6xl mx-auto px-4 sm:px-6">
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-          Avant vs Après BulkDescribe
+          Avant vs Après Descri
         </h2>
         <div className="grid md:grid-cols-2 gap-8">
           <div className="rounded-xl border-2 border-red-100 bg-red-50 p-8">
@@ -133,7 +133,7 @@ export default function LandingPage() {
             </ul>
           </div>
           <div className="rounded-xl border-2 border-green-100 bg-green-50 p-8">
-            <div className="text-2xl mb-4">🚀 Avec BulkDescribe</div>
+            <div className="text-2xl mb-4">🚀 Avec Descri</div>
             <ul className="space-y-3 text-gray-700">
               {[
                 'Uploader votre CSV existant',
@@ -263,8 +263,8 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-gray-100 py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-brand-600 font-bold">BulkDescribe</span>
-          <p className="text-sm text-gray-400">© 2026 BulkDescribe. Tous droits réservés.</p>
+          <span className="text-brand-600 font-bold">Descri</span>
+          <p className="text-sm text-gray-400">© 2026 Descri. Tous droits réservés.</p>
         </div>
       </footer>
     </div>

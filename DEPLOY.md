@@ -1,4 +1,4 @@
-# DEPLOY.md — Guide de déploiement complet BulkDescribe
+# DEPLOY.md — Guide de déploiement complet Descri
 
 ## Prérequis
 - Node.js 18+
@@ -42,13 +42,13 @@ Dans **Authentication → Settings** :
 Dans **Products → Add product** :
 
 **Plan Starter**
-- Nom : "BulkDescribe Starter"
+- Nom : "Descri Starter"
 - Prix : $9.00 / month (récurrent)
 - Métadonnées du prix : `plan = starter`
 - Noter l'ID du prix : `price_xxx` → `STRIPE_PRICE_STARTER`
 
 **Plan Growth**
-- Nom : "BulkDescribe Growth"
+- Nom : "Descri Growth"
 - Prix : $29.00 / month (récurrent)
 - Métadonnées du prix : `plan = growth`
 - Noter l'ID du prix : `price_xxx` → `STRIPE_PRICE_GROWTH`

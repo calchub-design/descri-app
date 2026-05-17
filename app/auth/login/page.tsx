@@ -40,7 +40,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md">
         <Link href="/" className="flex items-center justify-center mb-8 text-brand-600 font-bold text-2xl">
-          BulkDescribe
+          Descri
         </Link>
 
         <div className="card">

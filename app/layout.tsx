@@ -7,21 +7,21 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://descri.app'),
-  title: 'BulkDescribe — Générateur de descriptions produits en masse',
+  title: 'Descri — Générateur de descriptions produits en masse',
   description: 'Uploadez votre CSV produits, téléchargez vos descriptions générées par IA en 2 minutes. Sans intégration, sans copier-coller.',
   alternates: {
     canonical: 'https://descri.app',
   },
   openGraph: {
-    title: 'BulkDescribe — Génération en masse par CSV',
+    title: 'Descri — Génération en masse par CSV',
     description: '100 descriptions produits en 2 minutes. Upload CSV → Download CSV.',
     type: 'website',
     url: 'https://descri.app',
-    siteName: 'BulkDescribe',
+    siteName: 'Descri',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BulkDescribe — Génération en masse par CSV',
+    title: 'Descri — Génération en masse par CSV',
     description: '100 descriptions produits en 2 minutes. Upload CSV → Download CSV.',
   },
 }
