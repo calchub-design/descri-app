@@ -1,6 +1,10 @@
 import Anthropic from '@anthropic-ai/sdk'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+let _client: Anthropic | null = null
+function getClient(): Anthropic {
+  if (!_client) _client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  return _client
+}
 
 const STYLE_INSTRUCTIONS: Record<string, string> = {
   seo: 'Optimisé SEO : intègre naturellement les mots-clés pertinents, structure claire avec bénéfices produit, vocabulaire que les acheteurs utilisent dans leurs recherches Google.',
@@ -49,7 +53,7 @@ export async function generateDescription(
   product: ProductInput,
   options: GenerationOptions
 ): Promise<string> {
-  const message = await client.messages.create({
+  const message = await getClient().messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 400,
     messages: [

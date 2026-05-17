@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
-import { stripe, getStripePriceId } from '@/lib/stripe'
+import { getStripe, getStripePriceId } from '@/lib/stripe'
 import { createServiceClient } from '@/lib/supabase/server'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
   const supabase = createClient()
@@ -24,7 +26,7 @@ export async function GET(request: Request) {
     .eq('user_id', user.id)
     .single()
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: 'subscription',
     payment_method_types: ['card'],
     line_items: [{ price: getStripePriceId(plan), quantity: 1 }],

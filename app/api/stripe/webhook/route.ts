@@ -1,6 +1,8 @@
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import { createServiceClient } from '@/lib/supabase/server'
 import Stripe from 'stripe'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   const body = await request.text()
@@ -8,7 +10,7 @@ export async function POST(request: Request) {
 
   let event: Stripe.Event
   try {
-    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!)
+    event = getStripe().webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!)
   } catch (err) {
     return Response.json({ error: `Webhook error: ${err}` }, { status: 400 })
   }

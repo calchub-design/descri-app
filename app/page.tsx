@@ -234,7 +234,7 @@ export default function LandingPage() {
             },
             {
               q: 'Mes données sont-elles sécurisées ?',
-              a: 'Vos fichiers CSV sont traités en mémoire et jamais stockés sur nos serveurs. Seuls les compteurs d'utilisation sont enregistrés.',
+              a: "Vos fichiers CSV sont traités en mémoire et jamais stockés sur nos serveurs. Seuls les compteurs d'utilisation sont enregistrés.",
             },
           ].map((item) => (
             <div key={item.q} className="border-b border-gray-200 pb-6">
