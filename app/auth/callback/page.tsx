@@ -1,25 +1,12 @@
-'use client'
+﻿'use client'
 
 export const dynamic = 'force-dynamic'
 
-import React from 'react'
-
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-export default function AuthCallbackPage() {
-  const router = useRouter()
-  const supabase = createClient()
-
-  useEffect(() => {
-    supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
-        router.push('/dashboard')
-      }
-    })
-  }, [router, supabase])
-
+function Spinner() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
@@ -27,5 +14,49 @@ export default function AuthCallbackPage() {
         <p className="text-gray-600">Connexion en cours...</p>
       </div>
     </div>
+  )
+}
+
+function CallbackHandler() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const supabase = createClient()
+
+  useEffect(() => {
+    const code = searchParams.get('code')
+    const error = searchParams.get('error')
+    const errorDescription = searchParams.get('error_description')
+
+    if (error) {
+      router.push(`/auth/login?error=${encodeURIComponent(errorDescription ?? error)}`)
+      return
+    }
+
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+        if (error) {
+          router.push(`/auth/login?error=${encodeURIComponent(error.message)}`)
+        } else {
+          router.push('/dashboard')
+        }
+      })
+    } else {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+        if (event === 'SIGNED_IN') {
+          subscription.unsubscribe()
+          router.push('/dashboard')
+        }
+      })
+    }
+  }, [router, searchParams, supabase])
+
+  return <Spinner />
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <CallbackHandler />
+    </Suspense>
   )
 }
