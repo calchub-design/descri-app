@@ -1,4 +1,4 @@
-import { createServerClient } from '@supabase/ssr'
+﻿import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
@@ -23,6 +23,14 @@ export async function middleware(request: NextRequest) {
     }
   )
 
+  // Intercept /?code= (Supabase envoie le magic link vers Site URL au lieu de /auth/callback)
+  const code = request.nextUrl.searchParams.get('code')
+  if (request.nextUrl.pathname === '/' && code) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/auth/callback'
+    return NextResponse.redirect(url)
+  }
+
   const { data: { user } } = await supabase.auth.getUser()
 
   const isDashboard = request.nextUrl.pathname.startsWith('/dashboard')
@@ -36,5 +44,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/', '/dashboard/:path*'],
 }
