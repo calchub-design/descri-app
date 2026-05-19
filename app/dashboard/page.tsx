@@ -186,7 +186,7 @@ export default function DashboardPage() {
 
   function handleDownload() {
     if (!gen.csvOutput) return
-    const blob = new Blob([gen.csvOutput], { type: 'text/csv;charset=utf-8;' })
+    const blob = new Blob(['﻿' + gen.csvOutput], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -491,3 +491,4 @@ export default function DashboardPage() {
     </div>
   )
 }
+
