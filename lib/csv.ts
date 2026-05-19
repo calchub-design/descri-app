@@ -1,4 +1,4 @@
-export interface ProductRow {
+﻿export interface ProductRow {
   product_name: string
   features: string
   category: string
@@ -15,14 +15,14 @@ export function parseCSV(rawText: string): ProductRow[] {
   // Strip UTF-8 BOM produced by Excel
   const text = rawText.replace(/^﻿/, '').trim()
   const lines = text.split('\n')
-  if (lines.length < 2) throw new Error('CSV vide ou sans données')
+  if (lines.length < 2) throw new Error('CSV vide ou sans donnees')
 
   const header = lines[0].toLowerCase().replace(/\r/g, '')
   const cols = header.split(',').map((c) => c.trim().replace(/^"|"$/g, ''))
 
   const nameIdx = cols.findIndex((c) => c === 'product_name' || c === 'nom_produit' || c === 'name')
-  const featIdx = cols.findIndex((c) => c === 'features' || c === 'caracteristiques' || c === 'caractéristiques')
-  const catIdx = cols.findIndex((c) => c === 'category' || c === 'categorie' || c === 'catégorie')
+  const featIdx = cols.findIndex((c) => c === 'features' || c === 'caracteristiques' || c === 'caracteristiques')
+  const catIdx = cols.findIndex((c) => c === 'category' || c === 'categorie' || c === 'categorie')
 
   if (nameIdx === -1) throw new Error('Colonne "product_name" introuvable dans le CSV')
   if (featIdx === -1) throw new Error('Colonne "features" introuvable dans le CSV')
@@ -71,7 +71,9 @@ export function buildOutputCSV(rows: OutputRow[]): string {
   const header = 'product_name,description_generated,style,language'
   const lines = rows.map((row) => {
     const name = `"${row.product_name.replace(/"/g, '""')}"`
-    const desc = `"${row.description_generated.replace(/"/g, '""')}"`
+    // Replace newlines with spaces for universal CSV compatibility
+    const cleanDesc = row.description_generated.replace(/\r?\n/g, ' ').trim()
+    const desc = `"${cleanDesc.replace(/"/g, '""')}"`
     const style = `"${row.style}"`
     const lang = `"${row.language}"`
     return `${name},${desc},${style},${lang}`
