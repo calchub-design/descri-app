@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 export const dynamic = 'force-dynamic'
 
@@ -68,26 +68,53 @@ export default function DashboardPage() {
     load()
   }, [router, supabase])
 
+  function processCSVText(file: File, text: string) {
+    const lines = text.trim().split('\n').filter(Boolean)
+    setRowCount(Math.max(0, lines.length - 1))
+    setCsvPreview(lines.slice(0, 4))
+    setCsvFile(file)
+  }
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    setCsvFile(file)
     setGen(INITIAL_GEN)
 
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      const text = ev.target?.result as string
-      const lines = text.trim().split('\n').filter(Boolean)
-      setRowCount(Math.max(0, lines.length - 1))
-      setCsvPreview(lines.slice(0, 4))
+    const isXlsx = file.name.endsWith('.xlsx') || file.name.endsWith('.xls')
+
+    if (isXlsx) {
+      const reader = new FileReader()
+      reader.onload = async (ev) => {
+        try {
+          const buffer = ev.target?.result as ArrayBuffer
+          const XLSX = await import('xlsx')
+          const workbook = XLSX.read(buffer, { type: 'array' })
+          const sheetName = workbook.SheetNames[0]
+          const worksheet = workbook.Sheets[sheetName]
+          const csvText = XLSX.utils.sheet_to_csv(worksheet)
+          const csvBlob = new Blob([csvText], { type: 'text/csv' })
+          const csvFileObj = new File([csvBlob], file.name.replace(/\.xlsx?$/, '.csv'), { type: 'text/csv' })
+          processCSVText(csvFileObj, csvText)
+        } catch {
+          setGen((g) => ({ ...g, status: 'error', error: 'Impossible de lire le fichier Excel. Verifiez le format.' }))
+        }
+      }
+      reader.readAsArrayBuffer(file)
+    } else {
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        const text = ev.target?.result as string
+        processCSVText(file, text)
+      }
+      reader.readAsText(file)
     }
-    reader.readAsText(file)
   }
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const file = e.dataTransfer.files[0]
-    if (file && file.name.endsWith('.csv')) {
+    const validExt = file?.name.endsWith('.csv') || file?.name.endsWith('.xlsx') || file?.name.endsWith('.xls')
+    if (file && validExt) {
       const input = fileInputRef.current
       if (input) {
         const dt = new DataTransfer()
@@ -189,11 +216,11 @@ export default function DashboardPage() {
             {user && <span className="text-sm text-gray-500 hidden sm:block">{user.email}</span>}
             {usage && usage.plan === 'free' && (
               <Link href="/#pricing" className="btn-primary text-sm py-2 px-4">
-                Passer à Starter
+                Passer a Starter
               </Link>
             )}
             <button onClick={handleSignOut} className="text-sm text-gray-500 hover:text-gray-800">
-              Déconnexion
+              Deconnexion
             </button>
           </div>
         </div>
@@ -213,7 +240,7 @@ export default function DashboardPage() {
               </div>
               {usage.plan !== 'growth' && (
                 <Link href="/api/stripe/checkout?plan=growth" className="text-sm text-brand-600 font-medium hover:text-brand-700">
-                  Passer au Growth →
+                  Passer au Growth &rarr;
                 </Link>
               )}
             </div>
@@ -226,7 +253,7 @@ export default function DashboardPage() {
             {usage.used >= usage.limit && (
               <p className="text-sm text-red-600 mt-2">
                 Quota mensuel atteint.{' '}
-                <Link href="/api/stripe/checkout?plan=growth" className="underline">Passer au plan supérieur</Link>
+                <Link href="/api/stripe/checkout?plan=growth" className="underline">Passer au plan superieur</Link>
                 {' '}ou attendez le {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toLocaleDateString('fr-FR')}.
               </p>
             )}
@@ -234,9 +261,9 @@ export default function DashboardPage() {
         )}
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Upload CSV */}
+          {/* Upload CSV / Excel */}
           <div className="card space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">1. Fichier CSV</h2>
+            <h2 className="text-lg font-semibold text-gray-900">1. Fichier produits</h2>
 
             <div
               onDrop={handleDrop}
@@ -247,7 +274,7 @@ export default function DashboardPage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".csv"
+                accept=".csv,.xlsx,.xls"
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -255,13 +282,13 @@ export default function DashboardPage() {
                 <div>
                   <div className="text-3xl mb-2">📄</div>
                   <p className="font-medium text-gray-900">{csvFile.name}</p>
-                  <p className="text-sm text-gray-500 mt-1">{rowCount} produits détectés</p>
+                  <p className="text-sm text-gray-500 mt-1">{rowCount} produits detectes</p>
                 </div>
               ) : (
                 <div>
                   <div className="text-3xl mb-2">📤</div>
-                  <p className="font-medium text-gray-900">Glissez votre CSV ici</p>
-                  <p className="text-sm text-gray-500 mt-1">ou cliquez pour sélectionner</p>
+                  <p className="font-medium text-gray-900">Glissez votre fichier ici</p>
+                  <p className="text-sm text-gray-500 mt-1">CSV ou Excel (.xlsx) — cliquez pour selectionner</p>
                 </div>
               )}
             </div>
@@ -280,8 +307,8 @@ export default function DashboardPage() {
               </summary>
               <div className="mt-2 bg-gray-50 rounded-lg p-3 font-mono text-xs">
                 <div className="text-gray-400">product_name,features,category</div>
-                <div>"Montre cuir","acier,cuir,50m","montres"</div>
-                <div>"Sac beige","cuir,doré,3 compart.","maroquinerie"</div>
+                <div>&quot;Montre cuir&quot;,&quot;acier,cuir,50m&quot;,&quot;montres&quot;</div>
+                <div>&quot;Sac beige&quot;,&quot;cuir,dore,3 compart.&quot;,&quot;maroquinerie&quot;</div>
               </div>
             </details>
           </div>
@@ -291,7 +318,7 @@ export default function DashboardPage() {
             <h2 className="text-lg font-semibold text-gray-900">2. Configuration</h2>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Style de rédaction</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Style de redaction</label>
               <div className="grid grid-cols-2 gap-2">
                 {Object.entries(STYLE_LABELS).map(([key, label]) => {
                   const available = availableStyles.includes(key)
@@ -344,12 +371,12 @@ export default function DashboardPage() {
             {usage && rowCount > 0 && (
               <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600">
                 <p>
-                  <strong>{rowCount}</strong> descriptions à générer •{' '}
+                  <strong>{rowCount}</strong> descriptions a generer &bull;{' '}
                   <strong>{usage.limit - usage.used}</strong> restantes ce mois
                 </p>
                 {rowCount > usage.limit - usage.used && (
                   <p className="text-red-600 mt-1">
-                    Quota insuffisant. Réduisez votre CSV ou{' '}
+                    Quota insuffisant. Reduisez votre fichier ou{' '}
                     <Link href="/api/stripe/checkout?plan=growth" className="underline">upgradez</Link>.
                   </p>
                 )}
@@ -360,7 +387,7 @@ export default function DashboardPage() {
 
         {/* Generate button */}
         <div className="card">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">3. Générer</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">3. Generer</h2>
 
           {gen.status === 'idle' && (
             <button
@@ -368,14 +395,14 @@ export default function DashboardPage() {
               disabled={!canGenerate || !csvFile}
               className="btn-primary w-full py-4 text-base"
             >
-              Générer {rowCount > 0 ? `${rowCount} descriptions` : 'les descriptions'}
+              Generer {rowCount > 0 ? `${rowCount} descriptions` : 'les descriptions'}
             </button>
           )}
 
           {gen.status === 'generating' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>Génération en cours...</span>
+                <span>Generation en cours...</span>
                 <span>{gen.progress} / {gen.total}</span>
               </div>
               <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
@@ -397,9 +424,9 @@ export default function DashboardPage() {
                   <span className="text-2xl">✅</span>
                   <div>
                     <p className="font-semibold text-green-800">
-                      {gen.total} descriptions générées !
+                      {gen.total} descriptions generees !
                     </p>
-                    <p className="text-sm text-green-700">Votre CSV est prêt à télécharger et réimporter.</p>
+                    <p className="text-sm text-green-700">Votre CSV est pret a telecharger et reimporter.</p>
                   </div>
                 </div>
               ) : (
@@ -408,16 +435,16 @@ export default function DashboardPage() {
                     <span className="text-2xl">⚠️</span>
                     <div>
                       <p className="font-semibold text-yellow-800">
-                        {gen.successCount}/{gen.total} descriptions générées — {gen.partialErrors.length} échec{gen.partialErrors.length > 1 ? 's' : ''}
+                        {gen.successCount}/{gen.total} descriptions generees — {gen.partialErrors.length} echec{gen.partialErrors.length > 1 ? 's' : ''}
                       </p>
                       <p className="text-sm text-yellow-700">
-                        Le CSV contient les descriptions réussies. Les lignes en échec ont une description vide.
+                        Le CSV contient les descriptions reussies. Les lignes en echec ont une description vide.
                       </p>
                     </div>
                   </div>
                   <details className="text-sm">
                     <summary className="cursor-pointer text-yellow-700 font-medium hover:text-yellow-800">
-                      Voir les {gen.partialErrors.length} produit{gen.partialErrors.length > 1 ? 's' : ''} en échec
+                      Voir les {gen.partialErrors.length} produit{gen.partialErrors.length > 1 ? 's' : ''} en echec
                     </summary>
                     <ul className="mt-2 space-y-1 bg-yellow-50 rounded-lg p-3 font-mono text-xs text-yellow-900">
                       {gen.partialErrors.map((e) => (
@@ -432,7 +459,7 @@ export default function DashboardPage() {
               )}
               <div className="flex gap-3">
                 <button onClick={handleDownload} className="btn-primary flex-1 py-3">
-                  Télécharger le CSV {gen.partialErrors.length > 0 ? 'partiel' : 'enrichi'}
+                  Telecharger le CSV {gen.partialErrors.length > 0 ? 'partiel' : 'enrichi'}
                 </button>
                 <button
                   onClick={() => setGen(INITIAL_GEN)}
@@ -447,14 +474,14 @@ export default function DashboardPage() {
           {gen.status === 'error' && (
             <div className="space-y-4">
               <div className="bg-red-50 rounded-lg p-4 text-red-700">
-                <p className="font-semibold mb-1">Erreur lors de la génération</p>
+                <p className="font-semibold mb-1">Erreur lors de la generation</p>
                 <p className="text-sm">{gen.error}</p>
               </div>
               <button
                 onClick={() => setGen(INITIAL_GEN)}
                 className="btn-secondary w-full"
               >
-                Réessayer
+                Reessayer
               </button>
             </div>
           )}
