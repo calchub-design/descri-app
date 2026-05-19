@@ -1,18 +1,20 @@
-'use client'
+﻿'use client'
 
 export const dynamic = 'force-dynamic'
 
-import React from 'react'
-
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
 export default function LoginPage() {
+  const searchParams = useSearchParams()
+  const urlError = searchParams.get('error')
+
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState(urlError ?? '')
 
   const supabase = createClient()
 
