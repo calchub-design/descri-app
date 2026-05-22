@@ -215,7 +215,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-4">
             {user && <span className="text-sm text-gray-500 hidden sm:block">{user.email}</span>}
             {usage && usage.plan === 'free' && (
-              <Link href="/#pricing" className="btn-primary text-sm py-2 px-4">
+              <Link href="/api/stripe/checkout?plan=starter" className="btn-primary text-sm py-2 px-4">
                 Passer a Starter
               </Link>
             )}
@@ -491,4 +491,5 @@ export default function DashboardPage() {
     </div>
   )
 }
+
 
