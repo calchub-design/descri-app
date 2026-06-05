@@ -6,17 +6,17 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://descri.app'),
+  metadataBase: new URL('https://www.descri.app'),
   title: 'Descri — Générateur de descriptions produits en masse',
   description: 'Uploadez votre CSV produits, téléchargez vos descriptions générées par IA en 2 minutes. Sans intégration, sans copier-coller.',
   alternates: {
-    canonical: 'https://descri.app',
+    canonical: 'https://www.descri.app',
   },
   openGraph: {
     title: 'Descri — Génération en masse par CSV',
     description: '100 descriptions produits en 2 minutes. Upload CSV → Download CSV.',
     type: 'website',
-    url: 'https://descri.app',
+    url: 'https://www.descri.app',
     siteName: 'Descri',
   },
   twitter: {

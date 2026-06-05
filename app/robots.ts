@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/dashboard', '/api/', '/auth/'],
     },
-    sitemap: 'https://descri.app/sitemap.xml',
+    sitemap: 'https://www.descri.app/sitemap.xml',
   }
 }

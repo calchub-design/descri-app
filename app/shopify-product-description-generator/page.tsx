@@ -7,14 +7,14 @@ export const metadata: Metadata = {
   description:
     'Generate hundreds of Shopify product descriptions in minutes. Export your products as a CSV, upload to Descri, pick a style and language, and download a ready-to-reimport file. Free to try, no app to install.',
   alternates: {
-    canonical: 'https://descri.app/shopify-product-description-generator',
+    canonical: 'https://www.descri.app/shopify-product-description-generator',
   },
   openGraph: {
     title: 'Shopify Product Description Generator — Descri',
     description:
       'Bulk-generate Shopify product descriptions from a CSV in minutes. Upload, pick a style, download a ready-to-reimport file.',
     type: 'website',
-    url: 'https://descri.app/shopify-product-description-generator',
+    url: 'https://www.descri.app/shopify-product-description-generator',
     siteName: 'Descri',
   },
 }
