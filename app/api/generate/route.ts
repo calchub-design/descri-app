@@ -7,6 +7,10 @@ import { PLANS } from '@/lib/plans'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
 
+// Borne par envoi pour rester sous le timeout serveur (300s) :
+// au-delà, l'utilisateur découpe son fichier en plusieurs lots.
+const MAX_ROWS_PER_UPLOAD = 200
+
 export async function POST(request: Request) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -33,6 +37,12 @@ export async function POST(request: Request) {
 
   if (products.length === 0) {
     return Response.json({ error: 'Le fichier CSV ne contient aucune ligne de données.' }, { status: 400 })
+  }
+
+  if (products.length > MAX_ROWS_PER_UPLOAD) {
+    return Response.json({
+      error: `Fichier trop volumineux : ${products.length} produits. Maximum ${MAX_ROWS_PER_UPLOAD} par envoi — découpez votre fichier en plusieurs lots.`,
+    }, { status: 400 })
   }
 
   // Check quota BEFORE generation — do NOT decrement yet

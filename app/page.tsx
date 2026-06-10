@@ -159,7 +159,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-4">
             Tarifs simples et transparents
           </h2>
-          <p className="text-center text-gray-600 mb-12">Payez seulement si ça vous convient. 14 jours d'essai gratuit inclus.</p>
+          <p className="text-center text-gray-600 mb-12">Commencez gratuitement avec 20 descriptions par mois. Passez à un plan payant seulement si vous en avez besoin.</p>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {/* Free */}
             <div className="card">
@@ -192,7 +192,7 @@ export default function LandingPage() {
                 <li className="flex gap-2"><span className="text-green-500">✓</span> Support email</li>
               </ul>
               <Link href="/auth/login" className="btn-primary w-full text-sm py-2.5">
-                Démarrer l'essai gratuit
+                Commencer gratuitement
               </Link>
             </div>
             {/* Growth */}
@@ -208,7 +208,7 @@ export default function LandingPage() {
                 <li className="flex gap-2"><span className="text-green-500">✓</span> Support prioritaire</li>
               </ul>
               <Link href="/auth/login" className="btn-secondary w-full text-sm py-2.5">
-                Démarrer l'essai gratuit
+                Commencer gratuitement
               </Link>
             </div>
           </div>

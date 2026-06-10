@@ -68,10 +68,13 @@ export default function DashboardPage() {
     load()
   }, [router, supabase])
 
-  function processCSVText(file: File, text: string) {
-    const lines = text.trim().split('\n').filter(Boolean)
-    setRowCount(Math.max(0, lines.length - 1))
-    setCsvPreview(lines.slice(0, 4))
+  async function processCSVText(file: File, text: string) {
+    // Comptage via papaparse : cohérent avec le parseur serveur
+    // (gère les champs multilignes entre guillemets des exports Shopify/Woo)
+    const Papa = (await import('papaparse')).default
+    const parsed = Papa.parse<string[]>(text.trim(), { skipEmptyLines: 'greedy' })
+    setRowCount(Math.max(0, parsed.data.length - 1))
+    setCsvPreview(text.trim().split('\n').filter(Boolean).slice(0, 4))
     setCsvFile(file)
   }
 
@@ -218,6 +221,11 @@ export default function DashboardPage() {
               <Link href="/api/stripe/checkout?plan=starter" className="btn-primary text-sm py-2 px-4">
                 Passer a Starter
               </Link>
+            )}
+            {usage && usage.plan !== 'free' && (
+              <a href="/api/stripe/portal" className="text-sm text-gray-500 hover:text-gray-800">
+                Gerer l&apos;abonnement
+              </a>
             )}
             <button onClick={handleSignOut} className="text-sm text-gray-500 hover:text-gray-800">
               Deconnexion

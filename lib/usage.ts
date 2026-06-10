@@ -13,7 +13,8 @@ export async function getUserPlan(userId: string): Promise<PlanId> {
     .select('plan, status')
     .eq('user_id', userId)
     .eq('status', 'active')
-    .single()
+    .limit(1)
+    .maybeSingle()
 
   if (!data) return 'free'
   return data.plan as PlanId
@@ -50,8 +51,18 @@ export async function incrementUsage(userId: string, count: number): Promise<voi
   if (count <= 0) return
   const supabase = createServiceClient()
   const month = getCurrentMonth()
-  const used = await getUsage(userId)
 
+  // Incrément atomique côté SQL (voir supabase/increment_usage.sql) :
+  // évite qu'une double génération simultanée écrase le compteur.
+  const { error } = await supabase.rpc('increment_usage', {
+    p_user_id: userId,
+    p_month: month,
+    p_count: count,
+  })
+  if (!error) return
+
+  // Fallback lecture+écriture si la fonction SQL n'est pas (encore) installée
+  const used = await getUsage(userId)
   await supabase.from('usage').upsert(
     { user_id: userId, month, descriptions_count: used + count },
     { onConflict: 'user_id,month' }
